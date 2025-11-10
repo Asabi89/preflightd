@@ -1,30 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Dashboard from '../pages/Dashboard';
-import * as api from './api';
+import DashboardPage from '../pages/DashboardPage';
+import * as api from '../Api/api';
 
-// Dashboard page - shows all checklists
-export default function DashboardPage() {
-  // Hook to navigate between pages
+/**
+ * COMPOSANT CONTENEUR : Dashboard
+ * Rôle : Gère la logique métier du tableau de bord (chargement, suppression, navigation)
+ * Présentation : Délègue l'affichage au composant DashboardView (pages/DashboardPage.jsx)
+ */
+export default function Dashboard() {
+
+  // ========== ÉTAT ET HOOKS ==========
   const navigate = useNavigate();
-  
-  // State: list of checklists
   const [checklists, setChecklists] = useState([]);
-  
-  // State: is data loading?
   const [loading, setLoading] = useState(true);
 
-  // Load checklists when page opens
+
+  // ========== CHARGEMENT INITIAL ==========
   useEffect(() => {
     loadChecklists();
   }, []);
 
-  // Function: load all checklists from server
+  // ========== FONCTIONS DE GESTION DES DONNÉES ==========
+  
+  // Charge toutes les checklists depuis l'API
   async function loadChecklists() {
     try {
       setLoading(true);
       const data = await api.getAllChecklists();
-      // API returns 'statut' (French) - map to 'status' (English)
       const checklistsWithStatus = data.map(checklist => ({
         ...checklist,
         status: checklist.statut ?? checklist.status ?? 0
@@ -38,15 +41,13 @@ export default function DashboardPage() {
     }
   }
 
-  // Function: delete a checklist
+  // Supprime une checklist après confirmation
   async function handleDelete(id) {
-    // Ask user to confirm
     const confirmed = window.confirm('Are you sure you want to delete this checklist?');
     
     if (confirmed) {
       try {
         await api.deleteChecklist(id);
-        // Reload the list
         await loadChecklists();
       } catch (error) {
         console.error('Error deleting checklist:', error);
@@ -54,23 +55,24 @@ export default function DashboardPage() {
     }
   }
 
-  // Function: go to view page
+  // ========== FONCTIONS DE NAVIGATION ==========
+  
   function handleView(id) {
     navigate(`/checklist/${id}`);
   }
 
-  // Function: go to edit page
   function handleEdit(id) {
     navigate(`/edit/${id}`);
   }
 
-  // Function: go to new checklist page
   function handleNew() {
     navigate('/new');
   }
 
+
+  // ========== RENDU ==========
   return (
-    <Dashboard
+    <DashboardPage
       checklists={checklists}
       loading={loading}
       onView={handleView}
