@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import DashboardCard from './contents/DashboardCard';
+import DashboardCard from '../components/contents/DashboardCard';
 import '../assets/css/Dashboard.css';
 
 // Affiche la liste des checklists
