@@ -1,84 +1,50 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DashboardPage from '../pages/DashboardPage';
-import * as api from '../Api/api';
+import { fetchChecklists, deleteChecklistAsync } from '../store/slices/checklistsSlice';
 
-/**
- * COMPOSANT CONTENEUR : Dashboard
- * Rôle : Gère la logique métier du tableau de bord (chargement, suppression, navigation)
- * Présentation : Délègue l'affichage au composant DashboardView (pages/DashboardPage.jsx)
- */
 export default function Dashboard() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { items: checklists, loading } = useSelector(state => state.checklists);
 
-  // ========== ÉTAT ET HOOKS ==========
-  const navigate = useNavigate();
-  const [checklists, setChecklists] = useState([]);
-  const [loading, setLoading] = useState(true);
+    // Fetches all checklists on component mount
+    useEffect(() => {
+        dispatch(fetchChecklists());
+    }, [dispatch]);
 
-
-  // ========== CHARGEMENT INITIAL ==========
-  useEffect(() => {
-    loadChecklists();
-  }, []);
-
-  // ========== FONCTIONS DE GESTION DES DONNÉES ==========
-  
-  // Charge toutes les checklists depuis l'API
-  async function loadChecklists() {
-    try {
-      setLoading(true);
-      const data = await api.getAllChecklists();
-      const checklistsWithStatus = data.map(checklist => ({
-        ...checklist,
-        status: checklist.statut ?? checklist.status ?? 0
-      }));
-      setChecklists(checklistsWithStatus);
-    } catch (error) {
-      console.error('Error loading checklists:', error);
-      setChecklists([]);
-    } finally {
-      setLoading(false);
+    // Deletes a checklist after user confirmation
+    async function handleDelete(id) {
+        const confirmed = window.confirm('Are you sure you want to delete this checklist?');
+        if (confirmed) {
+            dispatch(deleteChecklistAsync(id));
+        }
     }
-  }
 
-  // Supprime une checklist après confirmation
-  async function handleDelete(id) {
-    const confirmed = window.confirm('Are you sure you want to delete this checklist?');
-    
-    if (confirmed) {
-      try {
-        await api.deleteChecklist(id);
-        await loadChecklists();
-      } catch (error) {
-        console.error('Error deleting checklist:', error);
-      }
+    // Navigates to the checklist view page
+    function handleView(id) {
+        navigate(`/checklist/${id}`);
     }
-  }
 
-  // ========== FONCTIONS DE NAVIGATION ==========
-  
-  function handleView(id) {
-    navigate(`/checklist/${id}`);
-  }
+    // Navigates to the edit page for a checklist
+    function handleEdit(id) {
+        navigate(`/edit/${id}`);
+    }
 
-  function handleEdit(id) {
-    navigate(`/edit/${id}`);
-  }
+    // Navigates to create a new checklist
+    function handleNew() {
+        navigate('/new');
+    }
 
-  function handleNew() {
-    navigate('/new');
-  }
-
-
-  // ========== RENDU ==========
-  return (
-    <DashboardPage
-      checklists={checklists}
-      loading={loading}
-      onView={handleView}
-      onEdit={handleEdit}
-      onDelete={handleDelete}
-      onNew={handleNew}
-    />
-  );
+    return (
+        <DashboardPage
+            checklists={checklists}
+            loading={loading}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onNew={handleNew}
+        />
+    );
 }

@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Checklist from './components/Checklist';
 import Form from './components/Form';
-import './assets/css/App.css'
+import './styles/css/App.css';
+
+
 export default function App() {
+
   return (
     <BrowserRouter>
       <div className="app-container">
