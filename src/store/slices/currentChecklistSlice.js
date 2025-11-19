@@ -41,7 +41,7 @@ export const updateChecklistStatusAsync = createAsyncThunk(
   'currentChecklist/updateChecklistStatus',
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const result = await api.updateStatus(id, status);
+      await api.updateStatus(id, status);
       return { id, status };
     } catch (error) {
       return rejectWithValue(error.message);
@@ -98,7 +98,7 @@ const currentChecklistSlice = createSlice({
       .addCase(updateChecklistAsync.pending, (state) => {
         state.error = null;
       })
-      .addCase(updateChecklistAsync.fulfilled, (state) => {})
+      .addCase(updateChecklistAsync.fulfilled, () => {})
       .addCase(updateChecklistAsync.rejected, (state, action) => {
         state.error = action.payload;
       })

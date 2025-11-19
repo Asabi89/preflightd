@@ -83,9 +83,12 @@ export default function ChecklistForm({ checklistId, onCreate, onUpdate, onCance
         }
     };
 
-    // Removes a task from the form
+    // Removes a task from the form with confirmation
     const deleteTask = (taskId) => {
-        setTasks(tasks.filter(t => t.id !== taskId));
+        const confirmed = window.confirm('Are you sure you want to delete this task?');
+        if (confirmed) {
+            setTasks(tasks.filter(t => t.id !== taskId));
+        }
     };
 
     // Cancels editing and clears form fields

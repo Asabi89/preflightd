@@ -1,5 +1,5 @@
-const API_URL = 'https://greenvelvet.alwaysdata.net/pfc';
-const TOKEN = '285cf61c89c0bf8a86dc69dfa741b9a9c08cf671';
+const API_URL = import.meta.env.VITE_API_URL;
+const TOKEN = import.meta.env.VITE_API_TOKEN;
 
 // Fetches all checklists from the API
 export async function getAllChecklists() {
